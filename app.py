@@ -17,72 +17,123 @@ if arquivo_xml is not None:
     xml_content = arquivo_xml.read()
     data = xmltodict.parse(xml_content)
 
-    # --- INÍCIO DO SEU CÓDIGO INTACTO ---
-    info = data['NFSe']['infNFSe']
-    corte = r"PCRJ/E/CRE \(\d{7}\)"
-    descricao_original = info['DPS']['infDPS']['serv']['cServ']['xDescServ']
-    desc_partes = re.split(corte, descricao_original)
+    if 'NFSe' in data or 'infNFSe' in data:
+        st.success("Nota de Serviço carregada com Sucesso!")
 
-    informacoes = {
-        'numero': info['nNFSe'],
-        'data_emissao': info['DPS']['infDPS']['dhEmi'].split('T')[0],
-        'valor_servicos': info['valores']['vBC'],
-        'descricao_serv': '',
-        'nome_escola': '',
-        'endereco_escola': ''
-    }
-
-    if len(desc_partes) > 1:
-        informacoes['descricao_serv'] = desc_partes[0].strip()
-        resto = desc_partes[1].strip()
-        resto_dividido = resto.split('.', 1)
-        informacoes['nome_escola'] = resto_dividido[0].strip()
-        informacoes['endereco_escola'] = resto_dividido[1].strip() if len(resto_dividido) > 1 else ''
-    # --- FIM DO SEU CÓDIGO ---
-
-
-    st.divider() # Cria uma linha horizontal na tela para separar
-    st.subheader("Verifique e edite as informações:")
-
-    # 4. CRIANDO O FORMULÁRIO PARA O USUÁRIO EDITAR
-    # O 'with st.form' agrupa os campos e só envia os dados quando clicar no botão
-    with st.form("form_edicao"):
-        
-        # st.text_input cria uma caixa de texto. 
-        # O segundo parâmetro (value) é o que vem preenchido da sua extração!
-        col1, col2, col3 = st.columns(3) # Divide a tela em 3 colunas para ficar bonito
-        
-        with col1:
-            num_editado = st.text_input("Número da Nota", value=informacoes['numero'])
-        with col2:
-            data_editada = st.text_input("Data de Emissão", value=informacoes['data_emissao'])
-        with col3:
-            valor_editado = st.text_input("Valor (R$)", value=informacoes['valor_servicos'])
-
-        # st.text_area é melhor para textos longos
-        desc_editada = st.text_area("Descrição do Serviço", value=informacoes['descricao_serv'])
-        
-        escola_editada = st.text_input("Nome da Escola", value=informacoes['nome_escola'])
-        end_editado = st.text_input("Endereço da Escola", value=informacoes['endereco_escola'])
-
-        # Botão de salvar
-        botao_salvar = st.form_submit_button("Confirmar e Salvar")
-
-    # 5. O QUE ACONTECE QUANDO ELE CLICA EM SALVAR?
-    if botao_salvar:
-        # Criamos o dicionário final com o que estava nos campos de texto
-        dados_finais = {
-            'numero': num_editado,
-            'data_emissao': data_editada,
-            'valor_servicos': valor_editado,
-            'descricao_serv': desc_editada,
-            'nome_escola': escola_editada,
-            'endereco_escola': end_editado
+        info = data['NFSe']['infNFSe']
+        corte = r"PCRJ/E/CRE \(\d{7}\)"
+        descricao_original = info['DPS']['infDPS']['serv']['cServ']['xDescServ']
+        desc_partes = re.split(corte, descricao_original)
+    
+        informacoes = {
+            'numero': info['nNFSe'],
+            'data_emissao': info['DPS']['infDPS']['dhEmi'].split('T')[0],
+            'valor_servicos': info['valores']['vBC'],
+            'descricao_serv': '',
+            'nome_escola': '',
+            'endereco_escola': ''
         }
-        
-        st.success("Dados confirmados com sucesso!")
-        
-        # Mostra como o dicionário ficou no final
-        st.json(dados_finais)
-        
-        # AQUI VOCÊ PODE ADICIONAR O CÓDIGO PARA GERAR O ARQUIVO .TXT COM OS dados_finais
+    
+        if len(desc_partes) > 1:
+            informacoes['descricao_serv'] = desc_partes[0].strip()
+            resto = desc_partes[1].strip()
+            resto_dividido = resto.split('.', 1)
+            informacoes['nome_escola'] = resto_dividido[0].strip()
+            informacoes['endereco_escola'] = resto_dividido[1].strip() if len(resto_dividido) > 1 else ''
+        # --- FIM DO SEU CÓDIGO ---
+    
+    
+        st.divider() # Cria uma linha horizontal na tela para separar
+        st.subheader("Verifique e edite as informações:")
+    
+        # 4. CRIANDO O FORMULÁRIO PARA O USUÁRIO EDITAR
+        # O 'with st.form' agrupa os campos e só envia os dados quando clicar no botão
+        with st.form("form_edicao"):
+            
+            # st.text_input cria uma caixa de texto. 
+            # O segundo parâmetro (value) é o que vem preenchido da sua extração!
+            col1, col2, col3 = st.columns(3) # Divide a tela em 3 colunas para ficar bonito
+            
+            with col1:
+                num_editado = st.text_input("Número da Nota", value=informacoes['numero'])
+            with col2:
+                data_editada = st.text_input("Data de Emissão", value=informacoes['data_emissao'])
+            with col3:
+                valor_editado = st.text_input("Valor (R$)", value=informacoes['valor_servicos'])
+    
+            # st.text_area é melhor para textos longos
+            desc_editada = st.text_area("Descrição do Serviço", value=informacoes['descricao_serv'])
+            
+            escola_editada = st.text_input("Nome da Escola", value=informacoes['nome_escola'])
+            end_editado = st.text_input("Endereço da Escola", value=informacoes['endereco_escola'])
+    
+            # Botão de salvar
+            botao_salvar = st.form_submit_button("Confirmar e Salvar")
+    
+        # 5. O QUE ACONTECE QUANDO ELE CLICA EM SALVAR?
+        if botao_salvar:
+            st.success("Dados confirmados com sucesso!")
+
+    elif 'NFe' in data or 'nfeProc' in data:
+        st.success("Nota de Produto carregada com Sucesso!")
+
+        info = data['nfeProc']['NFe']['infNFe']
+        pcrj = r"PCRJ/E/CRE \([\d.]+\)"
+        corte = 'DOCUMENTO EMITIDO POR ME OU EPP OPTANTE PELO SIMPLES NACIONAL. NAO GERA DIREITO A CREDITO FISCAL DE ICMS, ISS E IPI'
+        infos_escola = re.sub(pcrj, "", info['infAdic']['infCpl']).replace(corte, "")
+
+        st.success(infos_escola)
+    
+        informacoes = {
+            'numero': info['nNFSe'],
+            'data_emissao': info['DPS']['infDPS']['dhEmi'].split('T')[0],
+            'valor_servicos': info['valores']['vBC'],
+            'descricao_serv': '',
+            'nome_escola': '',
+            'endereco_escola': ''
+        }
+    
+        if len(desc_partes) > 1:
+            informacoes['descricao_serv'] = desc_partes[0].strip()
+            resto = desc_partes[1].strip()
+            resto_dividido = resto.split('.', 1)
+            informacoes['nome_escola'] = resto_dividido[0].strip()
+            informacoes['endereco_escola'] = resto_dividido[1].strip() if len(resto_dividido) > 1 else ''
+        # --- FIM DO SEU CÓDIGO ---
+    
+    
+        st.divider() # Cria uma linha horizontal na tela para separar
+        st.subheader("Verifique e edite as informações:")
+    
+        # 4. CRIANDO O FORMULÁRIO PARA O USUÁRIO EDITAR
+        # O 'with st.form' agrupa os campos e só envia os dados quando clicar no botão
+        with st.form("form_edicao"):
+            
+            # st.text_input cria uma caixa de texto. 
+            # O segundo parâmetro (value) é o que vem preenchido da sua extração!
+            col1, col2, col3 = st.columns(3) # Divide a tela em 3 colunas para ficar bonito
+            
+            with col1:
+                num_editado = st.text_input("Número da Nota", value=informacoes['numero'])
+            with col2:
+                data_editada = st.text_input("Data de Emissão", value=informacoes['data_emissao'])
+            with col3:
+                valor_editado = st.text_input("Valor (R$)", value=informacoes['valor_servicos'])
+    
+            # st.text_area é melhor para textos longos
+            desc_editada = st.text_area("Descrição do Serviço", value=informacoes['descricao_serv'])
+            
+            escola_editada = st.text_input("Nome da Escola", value=informacoes['nome_escola'])
+            end_editado = st.text_input("Endereço da Escola", value=informacoes['endereco_escola'])
+    
+            # Botão de salvar
+            botao_salvar = st.form_submit_button("Confirmar e Salvar")
+    
+        # 5. O QUE ACONTECE QUANDO ELE CLICA EM SALVAR?
+        if botao_salvar:
+            st.success("Dados confirmados com sucesso!")
+
+    else:
+        st.error("Não foi possível identificar o tipo de nota. Por favor, verifique o arquivo.")
+else:
+    st.error("Nenhum arquivo foi carregado.")
