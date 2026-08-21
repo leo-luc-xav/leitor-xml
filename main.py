@@ -18,24 +18,28 @@ corte = r"PCRJ/E/CRE \(\d{7}\)"
 descricao_original = info['DPS']['infDPS']['serv']['cServ']['xDescServ']
 desc_partes = re.split(corte, descricao_original)
 
-print(desc_partes)
-
+#pegando as informações principais do dicionário 'info' e armazenando em um novo dicionário 'informacoes'
 informacoes = {
     'numero': info['nNFSe'],
     'data_emissao': info['DPS']['infDPS']['dhEmi'].split('T')[0],
     'valor_servicos': info['valores']['vBC']
 }
 
+#as informações adicionais são extraídas da descrição do serviço, se houver mais de uma parte após a divisão
 if len(desc_partes) > 1:
+    #a descrição do serviço é a primeira parte
     descricao = desc_partes[0].strip()
+    #o resto contém o nome da escola e o endereço, que são separados por um ponto
     resto = desc_partes[1].strip()
+    #o endereço da escola é obtido dividindo o resto em duas partes, usando o ponto como delimitador
     resto_dividido = resto.split('.', 1)
     nome_escola = resto_dividido[0].strip()
     endereco_escola = resto_dividido[1].strip() if len(resto_dividido) > 1 else ''
 
+    #adicionando as informações extraídas ao dicionário 'informacoes'
     informacoes['descricao_serv'] = descricao
     informacoes['nome_escola'] = nome_escola
     informacoes['endereco_escola'] = endereco_escola
 
-print(json.dumps(informacoes, indent=2, ensure_ascii=False))
+#print(json.dumps(informacoes, indent=2, ensure_ascii=False))
 
